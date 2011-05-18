@@ -1,6 +1,7 @@
 package info.javacoding.fsl.server.net.msg
 import info.javacoding.fsl.server.net.Message
 import java.io.{ File, FileInputStream, FileOutputStream }
+import info.javacoding.fsl.server.auth.Authentication
 
 /**
  * Moves a file/directory...
@@ -10,6 +11,9 @@ import java.io.{ File, FileInputStream, FileOutputStream }
 class MoveMsg extends Message {
   def getOpcode = "MOVE"
   def handle(params: Array[String]): String = {
+    if (!Authentication.canWrite()) {
+      return "You do not have permission to use this command"
+    }
     if (params.length != 2) {
       return "Move failed - invalid params"
     }
@@ -39,6 +43,9 @@ class MoveMsg extends Message {
 class CopyMsg extends Message {
   def getOpcode = "COPY"
   def handle(params: Array[String]): String = {
+    if (!Authentication.canWrite()) {
+      return "You do not have permission to use this command"
+    }
     if (params.length != 2) {
       return "Copy failed - invalid params"
     }
@@ -57,6 +64,9 @@ class CopyMsg extends Message {
 class ListMsg extends Message {
   def getOpcode = "LIST"
   def handle(params: Array[String]): String = {
+    if (!Authentication.canRead()) {
+      return "You do not have permission to use this command"
+    }
     if (params.length != 1) {
       return "List failed - invalid params"
     }
@@ -84,6 +94,9 @@ class ListMsg extends Message {
 class RemoveMsg extends Message {
   def getOpcode = "REMOVE"
   def handle(params: Array[String]): String = {
+    if (!Authentication.canWrite()) {
+      return "You do not have permission to use this command"
+    }
     if (params.length != 1) {
       return "Remove failed - invalid params"
     }
@@ -136,4 +149,5 @@ private object Helper {
   def parse(msg: String) = {
     msg.replaceAll("\\(home\\)", System.getProperty("user.home")).replaceAll("\\(sep\\)", File.separator)
   }
+
 }
