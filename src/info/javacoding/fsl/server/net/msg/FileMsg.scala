@@ -3,7 +3,7 @@ import info.javacoding.fsl.server.net.Message
 import java.io.{ File, FileInputStream, FileOutputStream }
 
 /**
- * Moves a file...
+ * Moves a file/directory...
  *
  * @author Joe Pritzel
  */
@@ -13,20 +13,26 @@ class MoveMsg extends Message {
     if (params.length != 2) {
       return "Move failed - invalid params"
     }
-    val fileName = params(0) replaceAll("\\(home\\)", System.getProperty("user.home")) replaceAll("\\(sep\\)", File.separator)
+    val fileName = Helper.parse(params(0))
     val file = new File(fileName)
-    val dir = new File(params(1) replaceAll("\\(home\\)", System.getProperty("user.home")) replaceAll("\\(sep\\)", File.separator))
-    val success = file.renameTo(new File(dir, file.getName()));
-    if (!success) {
-      return "Move failed"
-    } else {
+    val dir = new File(Helper.parse(params(1)))
+    if (file.isDirectory) {
+      Helper.copy(file, dir)
+      Helper.deleteDir(file)
       return "Moved - " + fileName + " to " + params(1)
+    } else {
+      val success = file.renameTo(new File(dir, file.getName()))
+      if (!success) {
+        return "Move failed"
+      } else {
+        return "Moved - " + fileName + " to " + params(1)
+      }
     }
   }
 }
 
 /**
- * Copies a file...
+ * Copies a file or folder...
  *
  * @author Joe Pritzel
  */
@@ -36,9 +42,9 @@ class CopyMsg extends Message {
     if (params.length != 2) {
       return "Copy failed - invalid params"
     }
-    val src = new File(params(0) replaceAll("\\(home\\)", System.getProperty("user.home")) replaceAll("\\(sep\\)", File.separator))
-    val dest = new File(params(1) replaceAll("\\(home\\)", System.getProperty("user.home")) replaceAll("\\(sep\\)", File.separator))
-    new FileOutputStream(dest) getChannel() transferFrom(new FileInputStream(src) getChannel, 0, Long.MaxValue)
+    val src = new File(Helper.parse(params(0)))
+    val dest = new File(Helper.parse(params(1)))
+    Helper.copy(src, dest)
     return "Copied - " + params(0) + " to " + params(1)
   }
 }
@@ -54,7 +60,7 @@ class ListMsg extends Message {
     if (params.length != 1) {
       return "List failed - invalid params"
     }
-    val msg = params(0) replaceAll("\\(home\\)", System.getProperty("user.home")) replaceAll("\\(sep\\)", File.separator)
+    val msg = Helper.parse(params(0))
     val f = new File(msg)
     if (!f.exists()) {
       return "No such directory"
@@ -65,13 +71,13 @@ class ListMsg extends Message {
     val fl = f.listFiles
     val sb = new StringBuilder()
     fl.foreach(ft => sb.append(ft.getName()).append(" - "))
-    sb.delete(sb.length() - 3, sb.length() - 1);
+    sb.delete(sb.length() - 3, sb.length() - 1)
     return sb.toString
   }
 }
 
 /**
- * Deletes a file...
+ * Deletes a file/directory...
  *
  * @author Joe Pritzel
  */
@@ -81,8 +87,53 @@ class RemoveMsg extends Message {
     if (params.length != 1) {
       return "Remove failed - invalid params"
     }
-    val f = new File(params(0) replaceAll("\\(home\\)", System.getProperty("user.home")) replaceAll("\\(sep\\)", File.separator))
-    f.delete
+    val f = new File(Helper.parse(params(0)))
+    Helper.deleteDir(f)
     return "Removed - " + params(0)
+  }
+}
+
+/**
+ * A class that has methods/functions that are common between FileMsgs
+ *
+ * @author Joe Pritzel
+ */
+private object Helper {
+  def copy(src: File, dest: File) {
+    if (src.isDirectory()) {
+      copyDir(src, dest)
+    } else {
+      copyFile(src, dest)
+    }
+    def copyFile(src: File, dest: File) {
+      val fos = new FileOutputStream(dest)
+      fos getChannel () transferFrom (new FileInputStream(src) getChannel, 0, Long.MaxValue)
+      fos close
+    }
+    def copyDir(src: File, dest: File) {
+      if (!dest.exists()) {
+        dest.mkdir();
+      }
+
+      val children = src.list;
+      for (i <- 0 until children.length) {
+        copy(new File(src, children(i)),
+          new File(dest, children(i)))
+      }
+    }
+  }
+
+  def deleteDir(dir: File) {
+    if (dir.isDirectory()) {
+      val children = dir.list()
+      for (i <- 0 until children.length) {
+        deleteDir(new File(dir, children(i)));
+      }
+    }
+    dir.delete();
+  }
+
+  def parse(msg: String) = {
+    msg.replaceAll("\\(home\\)", System.getProperty("user.home")).replaceAll("\\(sep\\)", File.separator)
   }
 }

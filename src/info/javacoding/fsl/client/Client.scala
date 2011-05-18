@@ -21,13 +21,15 @@ object Client {
   }
 
   def parseLine(msg: String) {
-    msg.toUpperCase match {
-      case "SHUTDOWN" => {
-        udp.sendMessage(msg)
-        println("Sent shutdown request")
-      }
+    try {
+      msg.toUpperCase match {
+        case "SHUTDOWN" => {
+          udp.sendMessage(msg)
+          println("Sent shutdown request")
+        }
 
-      case _ => println(udp.sendMessageWResp(msg))
+        case _ => println(udp.sendMessageWResp(msg))
+      }
     }
   }
 }
