@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="File System Link" default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
 	<property name="src" location="src" />
-	<property name="test" location="test" />
 	<property name="bin" location="bin" />
 	<property name="lib" location="lib" />
 	<property name="doc" location="doc" />
@@ -12,14 +11,8 @@
 		<include name="**/*.jar" />
 	</fileset>
 
-	<fileset id="tests" dir="${bin}">
-		<include name="**/*Test.class" />
-	</fileset>
-
 	<fileset id="production-classes" dir="${bin}">
 		<include name="**/*.class" />
-		<exclude name="**/*Test.class" />
-		<exclude name="**/package-info.class" />
 	</fileset>
 
 	<path id="binary-path">
@@ -39,7 +32,6 @@
 		<mkdir dir="${bin}" />
 		<mkdir dir="${doc}" />
 		<mkdir dir="${lib}" />
-		<mkdir dir="${test}" />
 		<taskdef resource="scala/tools/ant/antlib.xml">
 			<classpath>
 				<pathelement location="${lib}/scala-compiler-2.8.1.jar" />
@@ -55,11 +47,9 @@
 	<target name="build" depends="init">
 		<scalac destdir="${bin}" classpathref="library-path">
 			<src path="${src}" />
-			<src path="${test}" />
 		</scalac>
 		<javac destdir="${bin}" includeantruntime="false">
 			<src path="${src}" />
-			<src path="${test}" />
 			<classpath refid="library-path" />
 		</javac>
 	</target>
@@ -68,16 +58,6 @@
 		<delete dir="${bin}" />
 		<delete dir="${doc}" />
 		<delete file="${jar}" />
-	</target>
-
-	<target name="test" depends="build">
-		<junit fork="true" haltonfailure="true">
-			<classpath refid="master-path" />
-			<formatter type="brief" usefile="false" />
-			<batchtest>
-				<fileset refid="tests" />
-			</batchtest>
-		</junit>
 	</target>
 
 	<target name="run" depends="build">
