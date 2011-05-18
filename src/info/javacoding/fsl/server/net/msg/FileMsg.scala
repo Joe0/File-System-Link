@@ -69,3 +69,20 @@ class ListMsg extends Message {
     return sb.toString
   }
 }
+
+/**
+ * Deletes a file...
+ *
+ * @author Joe Pritzel
+ */
+class RemoveMsg extends Message {
+  def getOpcode = "REMOVE"
+  def handle(params: Array[String]): String = {
+    if (params.length != 1) {
+      return "Remove failed - invalid params"
+    }
+    val f = new File(params(0) replaceAll("\\(home\\)", System.getProperty("user.home")) replaceAll("\\(sep\\)", File.separator))
+    f.delete
+    return "Removed - " + params(0)
+  }
+}

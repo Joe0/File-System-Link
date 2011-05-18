@@ -34,8 +34,6 @@ object MessageManager extends Logging {
     }
   }
 
-  private val ls = System.getProperty("line.separator")
-
   def handle(e: MessageEvent, args: Array[String]) {
     Server.threadPool.execute(new Runnable() {
 
@@ -50,7 +48,7 @@ object MessageManager extends Logging {
         val response = handler.handle(params);
         info("response - " + response)
         if (response != null && response.length > 0) {
-          e.getChannel().write(response + ls, e.getRemoteAddress);
+          e.getChannel().write(response, e.getRemoteAddress);
         }
       }
 
