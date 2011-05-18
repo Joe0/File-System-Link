@@ -30,6 +30,8 @@ object Client {
 
         case _ => println(udp.sendMessageWResp(msg))
       }
+    } catch {
+    	case _ =>
     }
   }
 }
