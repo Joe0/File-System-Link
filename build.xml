@@ -85,7 +85,7 @@
 	</target>
 
 	<target name="doc" depends="build">
-		<scaladoc srcdir="${src}" destdir="${doc}/scala" deprecation="yes" unchecked="yes" doctitle="OSMCS Documentation" classpathref="master-path">
+		<scaladoc srcdir="${src}" destdir="${doc}" deprecation="yes" unchecked="yes" doctitle="OSMCS Documentation" classpathref="master-path">
 		</scaladoc>
 	</target>
 
