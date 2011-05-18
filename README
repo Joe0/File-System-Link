@@ -1,0 +1,3 @@
+An open source remote link to a computers file system, that is written in Scala.
+
+To simulate sending/receiving files, move the files into shared directories.

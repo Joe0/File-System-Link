@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0">
+  <info organisation="info.javacoding" module="File System Link" />
+  <dependencies>
+    <dependency org="org.jboss.netty" name="netty" rev="3.2.4.Final" />
+    <dependency org="junit" name="junit" rev="4.8.2" />
+    <dependency org="org.scala-lang" name="scala-library" rev="2.8.1"/>
+  	<dependency org="org.scala-lang" name="scala-compiler" rev="2.8.1"/>
+  	<dependency org="org.clapper" name="grizzled-slf4j_2.8.1" rev="0.4"/>
+  	<dependency org="org.slf4j" name="slf4j-api" rev="1.6.1"/>
+  	<dependency org="org.slf4j" name="slf4j-jdk14" rev="1.6.1"/>
+  </dependencies>
+</ivy-module>
