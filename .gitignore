@@ -15,4 +15,4 @@ bin
 lib
 doc
 world
-redstone.jar
+*.jar
